@@ -9,6 +9,9 @@ dist/
 tmp/
 out-tsc/
 
+# Angular specific
+.angular/
+
 # Runtime data
 pids
 *.pid
@@ -84,3 +87,7 @@ jspm_packages/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Package manager lock files (optional - some teams prefer to commit these)
+# package-lock.json
+# yarn.lock
