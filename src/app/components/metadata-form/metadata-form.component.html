@@ -1,0 +1,64 @@
+<div class="metadata-form">
+  <h3>Metadata for: {{ fileName }}</h3>
+  
+  <form [formGroup]="metadataForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="sourceUrl">Source URL</label>
+      <input 
+        type="url" 
+        id="sourceUrl" 
+        formControlName="sourceUrl"
+        placeholder="https://example.com (optional)"
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="trainerName">Trainer Name</label>
+      <input 
+        type="text" 
+        id="trainerName" 
+        formControlName="trainerName"
+        placeholder="Enter trainer name (optional)"
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="mediaType">Media Type</label>
+      <select id="mediaType" formControlName="mediaType" class="form-control">
+        <option value="">Select media type (optional)</option>
+        <option value="pdf">PDF</option>
+        <option value="doc">DOC</option>
+        <option value="docx">DOCX</option>
+        <option value="txt">TXT</option>
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+        <option value="audio">Audio</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label>
+        <input 
+          type="checkbox" 
+          formControlName="provideLinkToSearcher"
+        >
+        Provide link to searcher
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onSkip()" class="btn btn-secondary">
+        Skip File
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+      >
+        {{ isLastFile ? 'Upload & Finish' : 'Next File' }}
+      </button>
+    </div>
+  </form>
+</div>

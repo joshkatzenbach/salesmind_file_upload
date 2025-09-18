@@ -1,0 +1,55 @@
+<div class="file-upload-container">
+  <h2>Document Upload</h2>
+  
+  <div *ngIf="!selectedFiles.length" class="file-selection">
+    <div class="file-input-wrapper">
+      <input 
+        type="file" 
+        id="fileInput" 
+        multiple 
+        (change)="onFileSelected($event)"
+        class="file-input"
+      >
+      <label for="fileInput" class="file-input-label">
+        Choose Files
+      </label>
+    </div>
+    <p class="file-input-hint">Select multiple documents to upload</p>
+  </div>
+
+  <div *ngIf="selectedFiles.length > 0 && !uploadComplete" class="upload-progress">
+    <div class="progress-info">
+      <p>File {{ currentFileIndex + 1 }} of {{ selectedFiles.length }}</p>
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="((currentFileIndex + 1) / selectedFiles.length) * 100"
+        ></div>
+      </div>
+    </div>
+
+    <div *ngIf="uploadError" class="error-message">
+      {{ uploadError }}
+    </div>
+
+    <div *ngIf="isUploading" class="uploading-message">
+      Uploading {{ getCurrentFileName() }}...
+    </div>
+
+    <app-metadata-form
+      *ngIf="!isUploading"
+      [fileName]="getCurrentFileName()"
+      [isLastFile]="isLastFile()"
+      (metadataSubmitted)="onMetadataSubmitted($event)"
+      (skipFile)="onSkipFile()"
+    ></app-metadata-form>
+  </div>
+
+  <div *ngIf="uploadComplete" class="upload-complete">
+    <h3>Upload Complete!</h3>
+    <p>All {{ selectedFiles.length }} files have been processed.</p>
+    <button (click)="resetUpload()" class="btn btn-primary">
+      Upload More Files
+    </button>
+  </div>
+</div>
