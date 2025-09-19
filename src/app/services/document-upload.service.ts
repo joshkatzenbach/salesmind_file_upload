@@ -7,7 +7,7 @@ import { DocumentUpload } from '../models/document-metadata.interface';
   providedIn: 'root'
 })
 export class DocumentUploadService {
-  private apiUrl = 'http://localhost:8000/upload'; // Leave blank as requested
+  private apiUrl = 'http://localhost:8000' // Backend API base URL
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class DocumentUploadService {
     const headers = new HttpHeaders();
     // Don't set Content-Type, let browser set it with boundary for FormData
 
-    return this.http.post(this.apiUrl, formData, { headers });
+    return this.http.post(`${this.apiUrl}/upload`, formData, { headers });
   }
 }
  

@@ -1,0 +1,101 @@
+<div class="documents-page">
+  <div class="documents-container">
+    <div class="page-header">
+      <h1>Documents</h1>
+      <p class="subtitle">Manage your uploaded transcripts</p>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading documents...</p>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!isLoading && !error" class="documents-content">
+      <div class="documents-stats">
+        <div class="stat-card">
+          <span class="stat-number">{{ transcripts.length }}</span>
+          <span class="stat-label">Total Documents</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{{ getActiveCount() }}</span>
+          <span class="stat-label">Active</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">{{ getInactiveCount() }}</span>
+          <span class="stat-label">Inactive</span>
+        </div>
+      </div>
+
+      <div *ngIf="filteredTranscripts.length === 0 && !isLoading" class="empty-state">
+        <div class="empty-icon">📄</div>
+        <h3>No documents found</h3>
+        <p>Upload some documents to get started.</p>
+        <a routerLink="/upload" class="btn btn-primary">Upload Documents</a>
+      </div>
+
+      <div *ngIf="filteredTranscripts.length > 0" class="transcripts-list">
+        <div class="list-header">
+          <h3>Transcripts</h3>
+          <div class="filter-controls">
+            <select [(ngModel)]="filterStatus" (change)="applyFilter()" class="filter-select">
+              <option value="all">All Documents</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Inactive Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="transcript-cards">
+          <div *ngFor="let transcript of filteredTranscripts" class="transcript-card">
+            <div class="card-header">
+              <h4 class="transcript-title">{{ transcript.title || 'Untitled Document' }}</h4>
+              <div class="status-badge" [class.active]="transcript.active" [class.inactive]="!transcript.active">
+                {{ transcript.active ? 'Active' : 'Inactive' }}
+              </div>
+            </div>
+            
+            <div class="card-content">
+              <div class="transcript-info">
+                <div class="info-item">
+                  <span class="label">Trainer:</span>
+                  <span class="value">{{ transcript.trainer_name || 'Not specified' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Uploaded:</span>
+                  <span class="value">{{ formatDate(transcript.created_at) }}</span>
+                </div>
+                <div *ngIf="transcript.source_url" class="info-item">
+                  <span class="label">Source:</span>
+                  <a [href]="transcript.source_url" target="_blank" class="source-link">{{ transcript.source_url }}</a>
+                </div>
+                <div *ngIf="transcript.media_type" class="info-item">
+                  <span class="label">Type:</span>
+                  <span class="value">{{ transcript.media_type }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <label class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [checked]="transcript.active"
+                  (change)="toggleActiveState(transcript)"
+                  [disabled]="isUpdating[transcript.id]"
+                >
+                <span class="slider"></span>
+              </label>
+              <span class="toggle-label">
+                {{ transcript.active ? 'Deactivate' : 'Activate' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

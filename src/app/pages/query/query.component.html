@@ -1,0 +1,50 @@
+<div class="query-page">
+  <div class="query-container">
+    <h1>Query Documents</h1>
+    <p class="subtitle">Ask questions about your uploaded documents</p>
+    
+    <form [formGroup]="queryForm" (ngSubmit)="onSubmit()" class="query-form">
+      <div class="form-group">
+        <label for="question">Your Question</label>
+        <textarea
+          id="question"
+          formControlName="question"
+          placeholder="Enter your question here..."
+          rows="4"
+          class="question-input"
+          [disabled]="isLoading"
+        ></textarea>
+      </div>
+      
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="queryForm.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">Submit Query</span>
+        <span *ngIf="isLoading">Processing...</span>
+      </button>
+    </form>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <div *ngIf="response" class="response-container">
+      <div class="response-header">
+        <h3>Answer</h3>
+        <div class="answer-meta">
+          <span class="word-count">{{ getWordCount(response.answer) }} words</span>
+        </div>
+      </div>
+      <div class="answer">{{ response.answer }}</div>
+      
+      <div *ngIf="response.sources && response.sources.length > 0" class="sources">
+        <h4>Sources</h4>
+        <ul>
+          <li *ngFor="let source of response.sources">{{ source }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
