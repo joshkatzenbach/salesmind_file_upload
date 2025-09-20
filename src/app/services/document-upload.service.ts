@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DocumentUpload } from '../models/document-metadata.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentUploadService {
-  private apiUrl = 'http://localhost:8000' // Backend API base URL
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

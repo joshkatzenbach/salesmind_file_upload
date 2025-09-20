@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface QueryRequest {
   question: string;
@@ -15,7 +16,7 @@ export interface QueryResponse {
   providedIn: 'root'
 })
 export class QueryService {
-  private apiUrl = 'http://localhost:8000'; // Backend API base URL
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
