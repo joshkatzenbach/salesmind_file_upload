@@ -3,7 +3,7 @@
     <h1>Query Documents</h1>
     <p class="subtitle">Ask questions about your uploaded documents</p>
     
-    <form [formGroup]="queryForm" (ngSubmit)="onSubmit()" class="query-form">
+    <form [formGroup]="queryForm" (ngSubmit)="onSubmit()" class="query-form" [class.loading]="isLoading">
       <div class="form-group">
         <label for="question">Your Question</label>
         <textarea
@@ -22,12 +22,35 @@
         [disabled]="queryForm.invalid || isLoading"
       >
         <span *ngIf="!isLoading">Submit Query</span>
-        <span *ngIf="isLoading">Processing...</span>
+        <div *ngIf="isLoading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <span>Processing your query</span>
+        </div>
       </button>
     </form>
 
     <div *ngIf="error" class="error-message">
       {{ error }}
+    </div>
+
+    <!-- Loading skeleton while waiting for response -->
+    <div *ngIf="isLoading && !response" class="loading-skeleton">
+      <div class="skeleton-header">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-meta"></div>
+      </div>
+      <div class="skeleton-content">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+      <div class="skeleton-sources">
+        <div class="skeleton-source"></div>
+        <div class="skeleton-source"></div>
+      </div>
     </div>
 
     <div *ngIf="response" class="response-container">

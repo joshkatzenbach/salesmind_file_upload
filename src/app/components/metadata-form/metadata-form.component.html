@@ -25,27 +25,23 @@
     </div>
 
     <div class="form-group">
-      <label for="mediaType">Media Type</label>
-      <select id="mediaType" formControlName="mediaType" class="form-control">
-        <option value="">Select media type (optional)</option>
-        <option value="pdf">PDF</option>
-        <option value="doc">DOC</option>
-        <option value="docx">DOCX</option>
-        <option value="txt">TXT</option>
-        <option value="image">Image</option>
-        <option value="video">Video</option>
-        <option value="audio">Audio</option>
-        <option value="other">Other</option>
-      </select>
+      <label for="fileTitle">File Title</label>
+      <input 
+        type="text" 
+        id="fileTitle" 
+        formControlName="fileTitle"
+        placeholder="Enter a title for this file (optional)"
+        class="form-control"
+      >
     </div>
 
     <div class="form-group checkbox-group">
       <label>
         <input 
           type="checkbox" 
-          formControlName="provideLinkToSearcher"
+          formControlName="isVideo"
         >
-        Provide link to searcher
+        This is a video file
       </label>
     </div>
 

@@ -1,8 +1,8 @@
 export interface DocumentMetadata {
   sourceUrl?: string;
   trainerName?: string;
-  mediaType?: string;
-  provideLinkToSearcher: boolean;
+  fileTitle?: string;
+  isVideo: boolean;
 }
 
 export interface DocumentUpload {

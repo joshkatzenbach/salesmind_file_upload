@@ -19,8 +19,8 @@ export class MetadataFormComponent {
     this.metadataForm = this.fb.group({
       sourceUrl: [''],
       trainerName: [''],
-      mediaType: [''],
-      provideLinkToSearcher: [false]
+      fileTitle: [''],
+      isVideo: [false]
     });
   }
 
