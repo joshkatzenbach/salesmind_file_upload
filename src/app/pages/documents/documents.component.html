@@ -30,23 +30,31 @@
         </div>
       </div>
 
+      <!-- Filter controls - always visible -->
+      <div class="filter-section">
+        <div class="filter-controls">
+          <label for="filter-select" class="filter-label">Filter by status:</label>
+          <select id="filter-select" [(ngModel)]="filterStatus" (change)="applyFilter()" class="filter-select">
+            <option value="all">All Documents</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+        </div>
+      </div>
+
       <div *ngIf="filteredTranscripts.length === 0 && !isLoading" class="empty-state">
         <div class="empty-icon">📄</div>
         <h3>No documents found</h3>
-        <p>Upload some documents to get started.</p>
-        <a routerLink="/upload" class="btn btn-primary">Upload Documents</a>
+        <p *ngIf="filterStatus === 'all'">Upload some documents to get started.</p>
+        <p *ngIf="filterStatus === 'active'">No active documents found. Try switching to "All Documents" or "Inactive Only".</p>
+        <p *ngIf="filterStatus === 'inactive'">No inactive documents found. Try switching to "All Documents" or "Active Only".</p>
+        <a *ngIf="filterStatus === 'all'" routerLink="/upload" class="btn btn-primary">Upload Documents</a>
+        <button *ngIf="filterStatus !== 'all'" (click)="filterStatus = 'all'; applyFilter()" class="btn btn-secondary">Show All Documents</button>
       </div>
 
       <div *ngIf="filteredTranscripts.length > 0" class="transcripts-list">
         <div class="list-header">
-          <h3>Transcripts</h3>
-          <div class="filter-controls">
-            <select [(ngModel)]="filterStatus" (change)="applyFilter()" class="filter-select">
-              <option value="all">All Documents</option>
-              <option value="active">Active Only</option>
-              <option value="inactive">Inactive Only</option>
-            </select>
-          </div>
+          <h3>Transcripts ({{ filteredTranscripts.length }})</h3>
         </div>
 
         <div class="transcript-cards">
