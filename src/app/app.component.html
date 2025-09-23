@@ -1,7 +1,7 @@
 <div class="app-container">
-  <app-side-menu *ngIf="sessionInfo.isAuthenticated"></app-side-menu>
+  <app-side-menu *ngIf="sessionInfo.isAuthenticated && sessionInfo.user"></app-side-menu>
   
-  <main class="app-main" [class.authenticated]="sessionInfo.isAuthenticated">
+  <main class="app-main" [class.authenticated]="sessionInfo.isAuthenticated && sessionInfo.user">
     <router-outlet></router-outlet>
   </main>
 </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../models/auth.interface';
 
@@ -31,9 +32,9 @@ export class LoginComponent implements OnInit {
     // Get return URL from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     
-    // Check if user is already logged in
+    // Wait for session check to complete before deciding what to do
     this.authService.sessionInfo$.subscribe(sessionInfo => {
-      if (sessionInfo.isAuthenticated) {
+      if (sessionInfo.isAuthenticated && sessionInfo.user) {
         this.router.navigate([this.returnUrl]);
       }
     });
@@ -49,17 +50,14 @@ export class LoginComponent implements OnInit {
         password: this.loginForm.value.password
       };
 
-      this.authService.login(loginData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          // Redirect to return URL or dashboard
-          this.router.navigate([this.returnUrl]);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.error = this.getErrorMessage(error);
-          console.error('Login error:', error);
-        }
+      this.authService.login(loginData).then(response => {
+        this.isLoading = false;
+        // Redirect immediately after successful login
+        this.router.navigate([this.returnUrl]);
+      }).catch(error => {
+        this.isLoading = false;
+        this.error = this.getErrorMessage(error);
+        console.error('Login error:', error);
       });
     }
   }

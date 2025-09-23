@@ -23,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authService.sessionInfo$
       .pipe(takeUntil(this.destroy$))
       .subscribe(sessionInfo => {
+        console.log('App component received session info:', sessionInfo);
         this.sessionInfo = sessionInfo;
         
         // If user is authenticated, check if they have access to any pages

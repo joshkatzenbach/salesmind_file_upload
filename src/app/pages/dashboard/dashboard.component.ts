@@ -19,11 +19,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authService.sessionInfo$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(sessionInfo => {
-        this.sessionInfo = sessionInfo;
-      });
+    this.sessionInfo = this.authService.getSessionInfo();
+    console.log('Dashboard received session info:', this.sessionInfo);
   }
 
   ngOnDestroy(): void {

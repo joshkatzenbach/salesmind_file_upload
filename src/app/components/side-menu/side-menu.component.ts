@@ -26,6 +26,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     this.authService.sessionInfo$
       .pipe(takeUntil(this.destroy$))
       .subscribe(sessionInfo => {
+        console.log('Side menu received session info:', sessionInfo);
         this.sessionInfo = sessionInfo;
       });
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of, map } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, of, map, firstValueFrom } from 'rxjs';
 import { User, LoginRequest, RegisterRequest, AuthResponse, SessionInfo } from '../models/auth.interface';
 import { environment } from '../../environments/environment';
 
@@ -45,21 +45,14 @@ export class AuthService {
   /**
    * Login user and establish session
    */
-  login(loginData: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<User>(`${this.apiUrl}/auth/login`, loginData, {
+  login(loginData: LoginRequest): Promise<any> {
+    return firstValueFrom(this.http.post<{ user: User, session_expires_at : string }>(`${this.apiUrl}/auth/login`, loginData, {
       withCredentials: true // Important for session cookies
-    }).pipe(
-      map(user => {
-        // Transform the user response to match AuthResponse interface
-        const authResponse: AuthResponse = {
-          user: user,
-          message: 'Login successful'
-        };
-        // Update session info on successful login
-        this.updateSessionInfo(user);
-        return authResponse;
-      })
-    );
+    })).then(response => {
+      // Update session info on successful login
+      this.updateSessionInfo(response.user);
+      return response.user;
+    });
   }
 
   /**
