@@ -1,25 +1,42 @@
-<nav class="side-menu">
+<nav class="side-menu" *ngIf="sessionInfo.isAuthenticated">
   <div class="menu-header">
     <h2>SalesMind</h2>
+    <div class="user-info">
+      <div class="user-avatar">
+        {{ getUserDisplayName().charAt(0) || 'U' }}
+      </div>
+      <div class="user-details">
+        <div class="user-name">{{ getUserDisplayName() }}</div>
+        <div class="user-role">{{ sessionInfo.accessLevel | titlecase }}</div>
+      </div>
+    </div>
   </div>
+  
   <ul class="menu-items">
-    <li class="menu-item">
+    <li class="menu-item" *ngIf="canAccessUpload()">
       <a routerLink="/upload" routerLinkActive="active" class="menu-link">
         <span class="menu-icon">📄</span>
         Document Upload
       </a>
     </li>
-    <li class="menu-item">
+    <li class="menu-item" *ngIf="canAccessDocuments()">
       <a routerLink="/documents" routerLinkActive="active" class="menu-link">
         <span class="menu-icon">📚</span>
         Documents
       </a>
     </li>
-    <li class="menu-item">
+    <li class="menu-item" *ngIf="canAccessQuery()">
       <a routerLink="/query" routerLinkActive="active" class="menu-link">
         <span class="menu-icon">🔍</span>
         Query Documents
       </a>
     </li>
   </ul>
+  
+  <div class="menu-footer">
+    <button (click)="logout()" class="logout-button">
+      <span class="menu-icon">🚪</span>
+      Logout
+    </button>
+  </div>
 </nav>

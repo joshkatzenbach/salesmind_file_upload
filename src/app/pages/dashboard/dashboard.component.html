@@ -1,0 +1,37 @@
+<div class="dashboard-page">
+  <div class="dashboard-container">
+    <div class="welcome-section">
+      <h1>Welcome, {{ getUserDisplayName() }}!</h1>
+      <p class="welcome-subtitle">Here's what you can do with your account</p>
+    </div>
+
+    <div *ngIf="hasAnyAccess()" class="access-cards">
+      <div *ngIf="canAccessUpload()" class="access-card">
+        <div class="card-icon">📄</div>
+        <h3>Upload Documents</h3>
+        <p>Upload and manage your documents for processing</p>
+        <a routerLink="/upload" class="card-button">Go to Upload</a>
+      </div>
+
+      <div *ngIf="canAccessQuery()" class="access-card">
+        <div class="card-icon">🔍</div>
+        <h3>Query Documents</h3>
+        <p>Search and query your uploaded documents</p>
+        <a routerLink="/query" class="card-button">Go to Query</a>
+      </div>
+
+      <div *ngIf="canAccessDocuments()" class="access-card">
+        <div class="card-icon">📚</div>
+        <h3>View All Documents</h3>
+        <p>Manage and view all documents in the system</p>
+        <a routerLink="/documents" class="card-button">Go to Documents</a>
+      </div>
+    </div>
+
+    <div *ngIf="!hasAnyAccess()" class="no-access">
+      <div class="no-access-icon">🚫</div>
+      <h2>No Access Available</h2>
+      <p>You don't currently have access to any features. Please contact your administrator for assistance.</p>
+    </div>
+  </div>
+</div>

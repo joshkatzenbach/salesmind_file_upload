@@ -13,6 +13,7 @@ export class FileUploadComponent {
   isUploading: boolean = false;
   uploadComplete: boolean = false;
   uploadError: string = '';
+  lastMetadata: DocumentMetadata | null = null; // Store last metadata for error recovery
 
   constructor(private documentUploadService: DocumentUploadService) {}
 
@@ -23,6 +24,7 @@ export class FileUploadComponent {
       this.currentFileIndex = 0;
       this.uploadComplete = false;
       this.uploadError = '';
+      this.lastMetadata = null; // Clear any stored metadata for new upload
     }
   }
 
@@ -45,6 +47,8 @@ export class FileUploadComponent {
 
     this.isUploading = true;
     this.uploadError = '';
+    // Store the metadata for potential error recovery
+    this.lastMetadata = metadata;
 
     const documentUpload: DocumentUpload = {
       file: currentFile,
@@ -54,12 +58,14 @@ export class FileUploadComponent {
     this.documentUploadService.uploadDocument(documentUpload).subscribe({
       next: (response) => {
         console.log('Upload successful:', response);
+        this.lastMetadata = null; // Clear stored metadata on success
         this.moveToNextFile();
       },
       error: (error) => {
         console.error('Upload failed:', error);
         this.uploadError = 'Upload failed. Please try again.';
         this.isUploading = false;
+        // Keep lastMetadata so form can be pre-filled on retry
       }
     });
   }
@@ -84,5 +90,6 @@ export class FileUploadComponent {
     this.uploadComplete = false;
     this.uploadError = '';
     this.isUploading = false;
+    this.lastMetadata = null; // Clear stored metadata on reset
   }
 }

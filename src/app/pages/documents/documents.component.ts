@@ -14,6 +14,11 @@ export class DocumentsComponent implements OnInit {
   error: string | null = null;
   filterStatus: string = 'all';
   isUpdating: { [key: string]: boolean } = {};
+  
+  // Delete confirmation modal properties
+  showDeleteModal = false;
+  transcriptToDelete: Transcript | null = null;
+  isDeleting = false;
 
   constructor(private transcriptService: TranscriptService) { }
 
@@ -95,5 +100,46 @@ export class DocumentsComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  // Delete functionality
+  confirmDelete(transcript: Transcript): void {
+    this.transcriptToDelete = transcript;
+    this.showDeleteModal = true;
+  }
+
+  onDeleteConfirmed(): void {
+    if (!this.transcriptToDelete) return;
+
+    this.isDeleting = true;
+    this.transcriptService.deleteTranscript(this.transcriptToDelete.id).subscribe({
+      next: () => {
+        // Remove the transcript from the array
+        this.transcripts = this.transcripts.filter(t => t.id !== this.transcriptToDelete!.id);
+        this.applyFilter();
+        this.isDeleting = false;
+        this.showDeleteModal = false;
+        this.transcriptToDelete = null;
+      },
+      error: (error) => {
+        this.error = 'Failed to delete document. Please try again.';
+        this.isDeleting = false;
+        this.showDeleteModal = false;
+        this.transcriptToDelete = null;
+        console.error('Error deleting transcript:', error);
+      }
+    });
+  }
+
+  onDeleteCancelled(): void {
+    this.showDeleteModal = false;
+    this.transcriptToDelete = null;
+    this.isDeleting = false;
+  }
+
+  getDeleteConfirmationMessage(): string {
+    if (!this.transcriptToDelete) return '';
+    const title = this.transcriptToDelete.title || 'Untitled Document';
+    return `Are you sure you want to delete "${title}"? This action cannot be undone.`;
   }
 }

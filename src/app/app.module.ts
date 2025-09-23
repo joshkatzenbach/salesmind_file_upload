@@ -1,21 +1,35 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
+import { ConfirmationModalComponent } from './components/confirmation-modal/confirmation-modal.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { QueryComponent } from './pages/query/query.component';
 import { DocumentsComponent } from './pages/documents/documents.component';
+import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+import { UploadGuard } from './guards/upload.guard';
+import { QueryGuard } from './guards/query.guard';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/upload', pathMatch: 'full' },
-  { path: 'upload', component: FileUploadComponent },
-  { path: 'query', component: QueryComponent },
-  { path: 'documents', component: DocumentsComponent }
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'unauthorized', component: UnauthorizedComponent },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'upload', component: FileUploadComponent, canActivate: [UploadGuard] },
+  { path: 'query', component: QueryComponent, canActivate: [QueryGuard] },
+  { path: 'documents', component: DocumentsComponent, canActivate: [AdminGuard] }
 ];
 
 @NgModule({
@@ -24,6 +38,11 @@ const routes: Routes = [
     FileUploadComponent,
     MetadataFormComponent,
     SideMenuComponent,
+    ConfirmationModalComponent,
+    LoginComponent,
+    RegisterComponent,
+    UnauthorizedComponent,
+    DashboardComponent,
     QueryComponent,
     DocumentsComponent
   ],
@@ -34,7 +53,13 @@ const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

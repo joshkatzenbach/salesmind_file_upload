@@ -20,7 +20,7 @@ export class DocumentUploadService {
     const headers = new HttpHeaders();
     // Don't set Content-Type, let browser set it with boundary for FormData
 
-    return this.http.post(`${this.apiUrl}/upload`, formData, { headers });
+    return this.http.post(`${this.apiUrl}/transcripts/upload`, formData, { headers });
   }
 }
  

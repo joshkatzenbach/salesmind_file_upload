@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/salesmind",
+    "public": "dist/salesmind-file-upload",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -88,22 +88,46 @@
             </div>
 
             <div class="card-actions">
-              <label class="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  [checked]="transcript.active"
-                  (change)="toggleActiveState(transcript)"
-                  [disabled]="isUpdating[transcript.id]"
-                >
-                <span class="slider"></span>
-              </label>
-              <span class="toggle-label">
-                {{ transcript.active ? 'Deactivate' : 'Activate' }}
-              </span>
+              <div class="action-group">
+                <label class="toggle-switch">
+                  <input 
+                    type="checkbox" 
+                    [checked]="transcript.active"
+                    (change)="toggleActiveState(transcript)"
+                    [disabled]="isUpdating[transcript.id]"
+                  >
+                  <span class="slider"></span>
+                </label>
+                <span class="toggle-label">
+                  {{ transcript.active ? 'Deactivate' : 'Activate' }}
+                </span>
+              </div>
+              
+              <button 
+                class="btn-delete"
+                (click)="confirmDelete(transcript)"
+                [disabled]="isUpdating[transcript.id]"
+                title="Delete document"
+              >
+                🗑️ Delete
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <app-confirmation-modal
+    [isVisible]="showDeleteModal"
+    [isLoading]="isDeleting"
+    [isDestructive]="true"
+    title="Delete Document"
+    [message]="getDeleteConfirmationMessage()"
+    confirmText="Delete"
+    cancelText="Cancel"
+    (confirmed)="onDeleteConfirmed()"
+    (cancelled)="onDeleteCancelled()"
+  ></app-confirmation-modal>
 </div>

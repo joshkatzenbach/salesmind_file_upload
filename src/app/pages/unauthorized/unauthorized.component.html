@@ -1,0 +1,23 @@
+<div class="unauthorized-page">
+  <div class="unauthorized-container">
+    <div class="unauthorized-content">
+      <div class="error-icon">🚫</div>
+      <h1>Access Denied</h1>
+      <p class="error-message">
+        Sorry, {{ getCurrentUser() }}, you don't have permission to access this resource.
+      </p>
+      <p class="help-text">
+        If you believe this is an error, please contact your administrator.
+      </p>
+      
+      <div class="action-buttons">
+        <button (click)="goHome()" class="btn btn-primary">
+          Go Home
+        </button>
+        <button (click)="logout()" class="btn btn-secondary">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DocumentMetadata } from '../../models/document-metadata.interface';
 
@@ -7,9 +7,10 @@ import { DocumentMetadata } from '../../models/document-metadata.interface';
   templateUrl: './metadata-form.component.html',
   styleUrls: ['./metadata-form.component.css']
 })
-export class MetadataFormComponent {
+export class MetadataFormComponent implements OnInit {
   @Input() fileName: string = '';
   @Input() isLastFile: boolean = false;
+  @Input() initialMetadata: DocumentMetadata | null = null; // Input for pre-filling form
   @Output() metadataSubmitted = new EventEmitter<DocumentMetadata>();
   @Output() skipFile = new EventEmitter<void>();
 
@@ -19,9 +20,16 @@ export class MetadataFormComponent {
     this.metadataForm = this.fb.group({
       sourceUrl: [''],
       trainerName: [''],
-      fileTitle: [''],
+      title: [''],
       isVideo: [false]
     });
+  }
+
+  ngOnInit(): void {
+    // Pre-fill form with initial metadata if provided
+    if (this.initialMetadata) {
+      this.metadataForm.patchValue(this.initialMetadata);
+    }
   }
 
   onSubmit(): void {

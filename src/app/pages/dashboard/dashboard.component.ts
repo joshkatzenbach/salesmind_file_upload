@@ -1,15 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { SessionInfo, User } from '../../models/auth.interface';
+import { SessionInfo } from '../../models/auth.interface';
 
 @Component({
-  selector: 'app-side-menu',
-  templateUrl: './side-menu.component.html',
-  styleUrls: ['./side-menu.component.css']
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class SideMenuComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy {
   sessionInfo: SessionInfo = {
     isAuthenticated: false,
     user: null,
@@ -17,10 +16,7 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   };
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.authService.sessionInfo$
@@ -33,12 +29,6 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  logout(): void {
-    this.authService.logout().subscribe(() => {
-      this.router.navigate(['/login']);
-    });
   }
 
   getUserDisplayName(): string {
@@ -61,15 +51,19 @@ export class SideMenuComponent implements OnInit, OnDestroy {
     return 'User';
   }
 
-  canAccessDocuments(): boolean {
-    return this.authService.canViewAllDocuments();
-  }
-
   canAccessUpload(): boolean {
     return this.authService.canUploadDocuments();
   }
 
   canAccessQuery(): boolean {
     return this.authService.canQueryDocuments();
+  }
+
+  canAccessDocuments(): boolean {
+    return this.authService.canViewAllDocuments();
+  }
+
+  hasAnyAccess(): boolean {
+    return this.canAccessUpload() || this.canAccessQuery() || this.canAccessDocuments();
   }
 }

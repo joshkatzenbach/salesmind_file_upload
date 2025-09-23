@@ -12,7 +12,9 @@
     "build:dev": "ng build --configuration=development",
     "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "./deploy.sh",
+    "deploy:firebase": "npm run build:prod && firebase deploy"
   },
   "private": true,
   "dependencies": {

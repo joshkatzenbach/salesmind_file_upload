@@ -23,4 +23,8 @@ export class TranscriptService {
       active: updateRequest.active
     });
   }
+
+  deleteTranscript(transcriptId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/transcripts/${transcriptId}`);
+  }
 }

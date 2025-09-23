@@ -32,7 +32,8 @@ export class QueryComponent implements OnInit {
     if (this.queryForm.valid) {
       this.isLoading = true;
       this.error = null;
-      this.response = null;
+      // Don't clear the response here - only clear it on successful submission
+      // this.response = null;
 
       const queryRequest: QueryRequest = {
         question: this.queryForm.value.question
@@ -42,10 +43,13 @@ export class QueryComponent implements OnInit {
         next: (response) => {
           this.response = response;
           this.isLoading = false;
+          // Only clear the form on successful submission
+          this.queryForm.reset();
         },
         error: (error) => {
           this.error = 'Failed to submit query. Please try again.';
           this.isLoading = false;
+          // Keep the form input filled in on error
           console.error('Query error:', error);
         }
       });

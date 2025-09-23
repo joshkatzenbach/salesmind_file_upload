@@ -1,7 +1,7 @@
 export interface DocumentMetadata {
   sourceUrl?: string;
   trainerName?: string;
-  fileTitle?: string;
+  title?: string;
   isVideo: boolean;
 }
 
