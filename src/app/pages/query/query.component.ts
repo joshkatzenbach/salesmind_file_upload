@@ -39,19 +39,16 @@ export class QueryComponent implements OnInit {
         question: this.queryForm.value.question
       };
 
-      this.queryService.submitQuery(queryRequest).subscribe({
-        next: (response) => {
-          this.response = response;
-          this.isLoading = false;
-          // Only clear the form on successful submission
-          this.queryForm.reset();
-        },
-        error: (error) => {
-          this.error = 'Failed to submit query. Please try again.';
-          this.isLoading = false;
-          // Keep the form input filled in on error
-          console.error('Query error:', error);
-        }
+      this.queryService.submitQuery(queryRequest).then(response => {
+        this.response = response;
+        this.isLoading = false;
+        // Only clear the form on successful submission
+        this.queryForm.reset();
+      }).catch(error => {
+        this.error = 'Failed to submit query. Please try again.';
+        this.isLoading = false;
+        // Keep the form input filled in on error
+        console.error('Query error:', error);
       });
     }
   }

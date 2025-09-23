@@ -30,17 +30,14 @@ export class DocumentsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.transcriptService.getAllTranscripts().subscribe({
-      next: (transcripts) => {
-        this.transcripts = transcripts || [];
-        this.applyFilter();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading transcripts:', error);
-        this.error = 'Failed to load documents. Please try again.';
-        this.isLoading = false;
-      }
+    this.transcriptService.getAllTranscripts().then(transcripts => {
+      this.transcripts = transcripts || [];
+      this.applyFilter();
+      this.isLoading = false;
+    }).catch(error => {
+      console.error('Error loading transcripts:', error);
+      this.error = 'Failed to load documents. Please try again.';
+      this.isLoading = false;
     });
   }
 
@@ -65,21 +62,18 @@ export class DocumentsComponent implements OnInit {
       active: !transcript.active
     };
 
-    this.transcriptService.updateTranscriptActiveState(updateRequest).subscribe({
-      next: (updatedTranscript) => {
-        // Update the transcript in the array
-        const index = this.transcripts.findIndex(t => t.id === transcript.id);
-        if (index !== -1) {
-          this.transcripts[index] = updatedTranscript;
-        }
-        this.applyFilter();
-        this.isUpdating[transcript.id] = false;
-      },
-      error: (error) => {
-        this.error = 'Failed to update document status. Please try again.';
-        this.isUpdating[transcript.id] = false;
-        console.error('Error updating transcript:', error);
+    this.transcriptService.updateTranscriptActiveState(updateRequest).then(updatedTranscript => {
+      // Update the transcript in the array
+      const index = this.transcripts.findIndex(t => t.id === transcript.id);
+      if (index !== -1) {
+        this.transcripts[index] = updatedTranscript;
       }
+      this.applyFilter();
+      this.isUpdating[transcript.id] = false;
+    }).catch(error => {
+      this.error = 'Failed to update document status. Please try again.';
+      this.isUpdating[transcript.id] = false;
+      console.error('Error updating transcript:', error);
     });
   }
 
@@ -112,22 +106,19 @@ export class DocumentsComponent implements OnInit {
     if (!this.transcriptToDelete) return;
 
     this.isDeleting = true;
-    this.transcriptService.deleteTranscript(this.transcriptToDelete.id).subscribe({
-      next: () => {
-        // Remove the transcript from the array
-        this.transcripts = this.transcripts.filter(t => t.id !== this.transcriptToDelete!.id);
-        this.applyFilter();
-        this.isDeleting = false;
-        this.showDeleteModal = false;
-        this.transcriptToDelete = null;
-      },
-      error: (error) => {
-        this.error = 'Failed to delete document. Please try again.';
-        this.isDeleting = false;
-        this.showDeleteModal = false;
-        this.transcriptToDelete = null;
-        console.error('Error deleting transcript:', error);
-      }
+    this.transcriptService.deleteTranscript(this.transcriptToDelete.id).then(() => {
+      // Remove the transcript from the array
+      this.transcripts = this.transcripts.filter(t => t.id !== this.transcriptToDelete!.id);
+      this.applyFilter();
+      this.isDeleting = false;
+      this.showDeleteModal = false;
+      this.transcriptToDelete = null;
+    }).catch(error => {
+      this.error = 'Failed to delete document. Please try again.';
+      this.isDeleting = false;
+      this.showDeleteModal = false;
+      this.transcriptToDelete = null;
+      console.error('Error deleting transcript:', error);
     });
   }
 

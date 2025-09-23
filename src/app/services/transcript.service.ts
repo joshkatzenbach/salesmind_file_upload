@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Transcript, TranscriptUpdateRequest, TranscriptApiResponse } from '../models/transcript.interface';
 import { environment } from '../../environments/environment';
 
@@ -12,19 +12,17 @@ export class TranscriptService {
 
   constructor(private http: HttpClient) { }
 
-  getAllTranscripts(): Observable<Transcript[]> {
-    return this.http.get<TranscriptApiResponse>(`${this.apiUrl}/transcripts/metadata`).pipe(
-      map(response => response.transcripts)
-    );
+  getAllTranscripts(): Promise<Transcript[]> {
+    return firstValueFrom(this.http.get<TranscriptApiResponse>(`${this.apiUrl}/transcripts/metadata`)).then(response => response.transcripts);
   }
 
-  updateTranscriptActiveState(updateRequest: TranscriptUpdateRequest): Observable<Transcript> {
-    return this.http.patch<Transcript>(`${this.apiUrl}/transcripts/${updateRequest.id}/active`, {
+  updateTranscriptActiveState(updateRequest: TranscriptUpdateRequest): Promise<Transcript> {
+    return firstValueFrom(this.http.patch<Transcript>(`${this.apiUrl}/transcripts/${updateRequest.id}/active`, {
       active: updateRequest.active
-    });
+    }));
   }
 
-  deleteTranscript(transcriptId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/transcripts/${transcriptId}`);
+  deleteTranscript(transcriptId: number): Promise<any> {
+    return firstValueFrom(this.http.delete(`${this.apiUrl}/transcripts/${transcriptId}`));
   }
 }

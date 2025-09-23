@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface QueryRequest {
@@ -20,7 +20,7 @@ export class QueryService {
 
   constructor(private http: HttpClient) { }
 
-  submitQuery(query: QueryRequest): Observable<QueryResponse> {
-    return this.http.post<QueryResponse>(`${this.apiUrl}/query`, query);
+  submitQuery(query: QueryRequest): Promise<QueryResponse> {
+    return firstValueFrom(this.http.post<QueryResponse>(`${this.apiUrl}/query`, query));
   }
 }

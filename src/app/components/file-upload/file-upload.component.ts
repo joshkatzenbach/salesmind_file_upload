@@ -55,18 +55,15 @@ export class FileUploadComponent {
       metadata: metadata
     };
 
-    this.documentUploadService.uploadDocument(documentUpload).subscribe({
-      next: (response) => {
-        console.log('Upload successful:', response);
-        this.lastMetadata = null; // Clear stored metadata on success
-        this.moveToNextFile();
-      },
-      error: (error) => {
-        console.error('Upload failed:', error);
-        this.uploadError = 'Upload failed. Please try again.';
-        this.isUploading = false;
-        // Keep lastMetadata so form can be pre-filled on retry
-      }
+    this.documentUploadService.uploadDocument(documentUpload).then(response => {
+      console.log('Upload successful:', response);
+      this.lastMetadata = null; // Clear stored metadata on success
+      this.moveToNextFile();
+    }).catch(error => {
+      console.error('Upload failed:', error);
+      this.uploadError = 'Upload failed. Please try again.';
+      this.isUploading = false;
+      // Keep lastMetadata so form can be pre-filled on retry
     });
   }
 

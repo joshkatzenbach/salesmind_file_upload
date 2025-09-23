@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { filter, take } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../models/auth.interface';
 
@@ -30,20 +29,10 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Wait for session check to complete before deciding what to do
-    this.authService.sessionInfo$.pipe(
-      filter(sessionInfo => {
-        // Wait for either authenticated state or confirmed unauthenticated state
-        return sessionInfo.isAuthenticated || (sessionInfo.user === null && !sessionInfo.isAuthenticated);
-      }),
-      take(1)
-    ).subscribe(sessionInfo => {
-      console.log('Register component received session info:', sessionInfo);
+    // Check if user is already logged in
+    this.authService.sessionInfo$.subscribe(sessionInfo => {
       if (sessionInfo.isAuthenticated && sessionInfo.user) {
-        console.log('User is authenticated, redirecting to dashboard');
         this.router.navigate(['/']);
-      } else {
-        console.log('User is not authenticated, showing register form');
       }
     });
   }
@@ -75,22 +64,14 @@ export class RegisterComponent implements OnInit {
         password: this.registerForm.value.password
       };
 
-      this.authService.register(registerData).subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          // Wait for session info to be updated before redirecting
-          this.authService.sessionInfo$.pipe(
-            filter(sessionInfo => sessionInfo.isAuthenticated && sessionInfo.user !== null),
-            take(1)
-          ).subscribe(() => {
-            this.router.navigate(['/']);
-          });
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.error = this.getErrorMessage(error);
-          console.error('Registration error:', error);
-        }
+      this.authService.register(registerData).then(response => {
+        this.isLoading = false;
+        // Redirect immediately after successful registration
+        this.router.navigate(['/']);
+      }).catch(error => {
+        this.isLoading = false;
+        this.error = this.getErrorMessage(error);
+        console.error('Registration error:', error);
       });
     }
   }

@@ -25,66 +25,65 @@ export class AuthService {
   /**
    * Register a new user
    */
-  register(registerData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<User>(`${this.apiUrl}/auth/register`, registerData, {
+  register(registerData: RegisterRequest): Promise<AuthResponse> {
+    return firstValueFrom(this.http.post<User>(`${this.apiUrl}/auth/register`, registerData, {
       withCredentials: true // Important for session cookies
-    }).pipe(
-      map(user => {
-        // Transform the user response to match AuthResponse interface
-        const authResponse: AuthResponse = {
-          user: user,
-          message: 'Registration successful'
-        };
-        // Update session info on successful registration
-        this.updateSessionInfo(user);
-        return authResponse;
-      })
-    );
+    })).then(user => {
+      // Transform the user response to match AuthResponse interface
+      const authResponse: AuthResponse = {
+        user: user,
+        message: 'Registration successful'
+      };
+      // Update session info on successful registration
+      this.updateSessionInfo(user);
+      return authResponse;
+    });
   }
 
   /**
    * Login user and establish session
    */
-  login(loginData: LoginRequest): Promise<any> {
-    return firstValueFrom(this.http.post<{ user: User, session_expires_at : string }>(`${this.apiUrl}/auth/login`, loginData, {
+  login(loginData: LoginRequest): Promise<AuthResponse> {
+    return firstValueFrom(this.http.post<User>(`${this.apiUrl}/auth/login`, loginData, {
       withCredentials: true // Important for session cookies
-    })).then(response => {
+    })).then(user => {
+
+      const authResponse: AuthResponse = {
+        user: user,
+        message: 'Login successful'
+      };
       // Update session info on successful login
-      this.updateSessionInfo(response.user);
-      return response.user;
+      this.updateSessionInfo(user);
+      return authResponse;
     });
   }
 
   /**
    * Logout user and clear session
    */
-  logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/logout`, {}, {
+  logout(): Promise<any> {
+    return firstValueFrom(this.http.post(`${this.apiUrl}/auth/logout`, {}, {
       withCredentials: true
-    }).pipe(
-      tap(() => {
-        // Clear session info on logout
-        this.clearSessionInfo();
-      }),
-      catchError(error => {
-        // Even if logout fails on server, clear local session
-        this.clearSessionInfo();
-        return of(null);
-      })
-    );
+    })).then(() => {
+      // Clear session info on logout
+      this.clearSessionInfo();
+    }).catch(error => {
+      // Even if logout fails on server, clear local session
+      this.clearSessionInfo();
+      throw error;
+    });
   }
 
   /**
    * Get current user information
    */
-  getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/auth/me`, {
+  getCurrentUser(): Promise<User> {
+    return firstValueFrom(this.http.get<User>(`${this.apiUrl}/auth/me`, {
       withCredentials: true
-    }).pipe(
-      tap(user => {
-        this.updateSessionInfo(user);
-      })
-    );
+    })).then(user => {
+      this.updateSessionInfo(user);
+      return user;
+    });
   }
 
   /**
@@ -153,15 +152,12 @@ export class AuthService {
    * Check for existing session by calling /me endpoint
    */
   private checkSession(): void {
-    this.getCurrentUser().subscribe({
-      next: (user) => {
-        // Session is valid, user is already logged in
-        this.updateSessionInfo(user);
-      },
-      error: () => {
-        // No valid session, user needs to login
-        this.clearSessionInfo();
-      }
+    this.getCurrentUser().then(user => {
+      // Session is valid, user is already logged in
+      this.updateSessionInfo(user);
+    }).catch(() => {
+      // No valid session, user needs to login
+      this.clearSessionInfo();
     });
   }
 
