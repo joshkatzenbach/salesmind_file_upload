@@ -15,10 +15,14 @@ import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.compone
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { QueryComponent } from './pages/query/query.component';
 import { DocumentsComponent } from './pages/documents/documents.component';
+import { ManageUsersComponent } from './pages/manage-users/manage-users.component';
+import { PromptHistoryComponent } from './pages/prompt-history/prompt-history.component';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { UploadGuard } from './guards/upload.guard';
 import { QueryGuard } from './guards/query.guard';
+import { ManageUsersGuard } from './guards/manage-users.guard';
+import { PromptHistoryGuard } from './guards/prompt-history.guard';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
@@ -29,7 +33,9 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'upload', component: FileUploadComponent, canActivate: [UploadGuard] },
   { path: 'query', component: QueryComponent, canActivate: [QueryGuard] },
-  { path: 'documents', component: DocumentsComponent, canActivate: [AdminGuard] }
+  { path: 'documents', component: DocumentsComponent, canActivate: [AdminGuard] },
+  { path: 'manage-users', component: ManageUsersComponent, canActivate: [ManageUsersGuard] },
+  { path: 'prompt-history', component: PromptHistoryComponent, canActivate: [PromptHistoryGuard] }
 ];
 
 @NgModule({
@@ -44,7 +50,9 @@ const routes: Routes = [
     UnauthorizedComponent,
     DashboardComponent,
     QueryComponent,
-    DocumentsComponent
+    DocumentsComponent,
+    ManageUsersComponent,
+    PromptHistoryComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,113 @@
+<div class="prompt-history-container">
+  <div class="page-header">
+    <h1>Prompt History</h1>
+    <button 
+      class="refresh-button" 
+      (click)="refreshQueries()" 
+      [disabled]="loading"
+      title="Refresh prompt history">
+      🔄
+    </button>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    <p>{{ error }}</p>
+    <button (click)="error = null" class="close-error">×</button>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <h3>Filters</h3>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="user-filter">User:</label>
+        <select 
+          id="user-filter"
+          [(ngModel)]="selectedUserId" 
+          (change)="onUserFilterChange()"
+          class="filter-select">
+          <option [value]="null">All Users</option>
+          <option 
+            *ngFor="let user of users" 
+            [value]="user.id">
+            {{ getUserDisplayName(user) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="days-filter">Time Period:</label>
+        <select 
+          id="days-filter"
+          [(ngModel)]="selectedDays" 
+          (change)="onDaysFilterChange()"
+          class="filter-select">
+          <option 
+            *ngFor="let option of dayOptions" 
+            [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="limit-filter">Results:</label>
+        <select 
+          id="limit-filter"
+          [(ngModel)]="limit" 
+          (change)="onLimitChange()"
+          class="filter-select">
+          <option 
+            *ngFor="let option of limitOptions" 
+            [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <button 
+          class="clear-filters-button" 
+          (click)="clearFilters()"
+          title="Clear all filters">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Loading prompt history...</p>
+  </div>
+
+  <div class="queries-container" *ngIf="!loading && queries.length > 0">
+    <div class="results-header">
+      <p>Showing {{ queries.length }} queries</p>
+    </div>
+    
+    <div class="queries-list">
+      <div *ngFor="let query of queries" class="query-item">
+        <div class="query-header">
+          <div class="user-info">
+            <div class="user-avatar">{{ query.user_name.charAt(0) }}</div>
+            <div class="user-details">
+              <div class="user-name">{{ query.user_name }}</div>
+              <div class="user-email">{{ query.user_email }}</div>
+            </div>
+          </div>
+          <div class="query-date">{{ formatDate(query.created_at) }}</div>
+        </div>
+        <div class="query-content">
+          <p class="query-text">{{ query.query }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-queries" *ngIf="!loading && queries.length === 0">
+    <p>No queries found for the selected filters.</p>
+    <button (click)="clearFilters()" class="clear-filters-button">
+      Clear Filters
+    </button>
+  </div>
+</div>

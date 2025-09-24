@@ -3,6 +3,7 @@ export interface User {
   first_name: string;
   last_name: string;
   full_name: string;
+  email: string;
   access_level: 'user' | 'admin' | 'super_admin';
   query_permission: boolean;
   created_at: string;

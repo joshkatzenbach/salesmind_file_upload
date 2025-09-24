@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable, map, take } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
@@ -12,23 +12,26 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(
+  async canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> {
-    return this.authService.sessionInfo$.pipe(
-      take(1),
-      map(sessionInfo => {
-        if (sessionInfo.isAuthenticated) {
-          return true;
-        } else {
-          // Redirect to login page with return URL
-          this.router.navigate(['/login'], { 
-            queryParams: { returnUrl: state.url } 
-          });
-          return false;
-        }
-      })
-    );
+  ): Promise<boolean> {
+    try {
+      const sessionInfo = await firstValueFrom(this.authService.sessionInfo$);
+      
+      if (sessionInfo.isAuthenticated) {
+        return true;
+      } else {
+        // Redirect to login page with return URL
+        this.router.navigate(['/login'], { 
+          queryParams: { returnUrl: state.url } 
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error('Error in AuthGuard:', error);
+      this.router.navigate(['/login']);
+      return false;
+    }
   }
 }

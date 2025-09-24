@@ -132,12 +132,20 @@ export class AuthService {
 
   /**
    * Check if user can query documents
+   * Admins and super admins always have query permission regardless of the flag
    */
   canQueryDocuments(): boolean {
     const sessionInfo = this.sessionInfoSubject.value;
     if (!sessionInfo.isAuthenticated || !sessionInfo.user) {
       return false;
     }
+    
+    // Admins and super admins always have query permission
+    if (this.isAdmin()) {
+      return true;
+    }
+    
+    // Regular users need the query_permission flag
     return sessionInfo.user.query_permission;
   }
 
@@ -180,6 +188,56 @@ export class AuthService {
       isAuthenticated: false,
       user: null,
       accessLevel: null
+    });
+  }
+
+  /**
+   * Get all users (admin and super admin only)
+   */
+  getAllUsers(): Observable<{users: User[], total: number}> {
+    return this.http.get<{users: User[], total: number}>(`${this.apiUrl}/users/`, {
+      withCredentials: true
+    });
+  }
+
+  /**
+   * Update user permissions (admin and super admin only)
+   */
+  updateUserPermissions(userId: number, permissions: {access_level?: string, query_permission?: boolean}): Observable<{message: string, user: User}> {
+    return this.http.put<{message: string, user: User}>(`${this.apiUrl}/users/${userId}/permissions`, permissions, {
+      withCredentials: true
+    });
+  }
+
+  /**
+   * Get user by ID (admin and super admin only)
+   */
+  getUserById(userId: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/users/${userId}`, {
+      withCredentials: true
+    });
+  }
+
+  /**
+   * Get prompt history (admin and super admin only)
+   */
+  getPromptHistory(params: {user_id?: number, days?: number, limit?: number}): Observable<{queries: any[], total: number, filters: any}> {
+    const queryParams = new URLSearchParams();
+    if (params.user_id) queryParams.set('user_id', params.user_id.toString());
+    if (params.days) queryParams.set('days', params.days.toString());
+    if (params.limit) queryParams.set('limit', params.limit.toString());
+    
+    return this.http.get<{queries: any[], total: number, filters: any}>(`${this.apiUrl}/prompt-history/?${queryParams}`, {
+      withCredentials: true
+    });
+  }
+
+  /**
+   * Get users for filtering prompt history (admin and super admin only)
+   */
+  getUsersForFiltering(): Observable<{users: any[]}> {
+    return this.http.get<{users: any[]}>(`${this.apiUrl}/prompt-history/users`, {
+      withCredentials: true
     });
   }
 }

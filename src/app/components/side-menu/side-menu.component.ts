@@ -77,4 +77,12 @@ export class SideMenuComponent implements OnInit, OnDestroy {
   canAccessQuery(): boolean {
     return this.authService.canQueryDocuments();
   }
+
+  canManageUsers(): boolean {
+    return this.authService.hasAccessLevel('admin');
+  }
+
+  canViewPromptHistory(): boolean {
+    return this.authService.hasAccessLevel('admin');
+  }
 }

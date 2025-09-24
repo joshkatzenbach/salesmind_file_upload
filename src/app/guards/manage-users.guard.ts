@@ -6,7 +6,7 @@ import { AuthService } from '../services/auth.service';
 @Injectable({
   providedIn: 'root'
 })
-export class UploadGuard implements CanActivate {
+export class ManageUsersGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private router: Router
@@ -19,22 +19,23 @@ export class UploadGuard implements CanActivate {
     try {
       const sessionInfo = await firstValueFrom(this.authService.sessionInfo$);
       
-      if (sessionInfo.isAuthenticated && this.authService.canUploadDocuments()) {
-        return true;
-      } else {
-        // Redirect to login page or show access denied
-        if (!sessionInfo.isAuthenticated) {
-          this.router.navigate(['/login'], { 
-            queryParams: { returnUrl: state.url } 
-          });
-        } else {
-          // User is logged in but doesn't have upload permission
-          this.router.navigate(['/unauthorized']);
-        }
+      // Check if user is authenticated
+      if (!sessionInfo.isAuthenticated) {
+        this.router.navigate(['/login'], { 
+          queryParams: { returnUrl: state.url } 
+        });
         return false;
       }
+
+      // Check if user has admin level (level 2 or 3)
+      if (!this.authService.hasAccessLevel('admin')) {
+        this.router.navigate(['/unauthorized']);
+        return false;
+      }
+
+      return true;
     } catch (error) {
-      console.error('Error in UploadGuard:', error);
+      console.error('Error in ManageUsersGuard:', error);
       this.router.navigate(['/login']);
       return false;
     }

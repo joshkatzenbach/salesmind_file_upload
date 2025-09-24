@@ -1,0 +1,100 @@
+<div class="manage-users-container">
+  <div class="page-header">
+    <h1>Manage Users</h1>
+    <button 
+      class="refresh-button" 
+      (click)="refreshUsers()" 
+      [disabled]="loading"
+      title="Refresh users list">
+      🔄
+    </button>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    <p>{{ error }}</p>
+    <button (click)="error = null" class="close-error">×</button>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Loading users...</p>
+  </div>
+
+  <div class="users-table-container" *ngIf="!loading && users.length > 0">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Access Level</th>
+          <th>Query Permission</th>
+          <th>Last Login</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" class="user-row">
+          <td class="user-name">
+            <div class="name-container">
+              <div class="user-avatar">{{ user.first_name.charAt(0) }}</div>
+              <div class="name-details">
+                <div class="full-name">{{ user.full_name }}</div>
+                <div class="user-id">ID: {{ user.id }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="user-email">{{ user.email }}</td>
+          <td class="access-level">
+            <div *ngIf="canChangeAccessLevel(user); else readOnlyLevel">
+              <select 
+                [value]="getAccessLevelNumber(user.access_level)"
+                (change)="updateAccessLevel(user, $any($event.target).value)"
+                [disabled]="user.isUpdating"
+                class="access-level-select">
+                <option value="1">User (Level 1)</option>
+                <option value="2">Admin (Level 2)</option>
+                <option value="3">Super Admin (Level 3)</option>
+              </select>
+              <div class="updating-indicator" *ngIf="user.isUpdating">Updating...</div>
+            </div>
+            <ng-template #readOnlyLevel>
+              <span class="access-level-badge" [class]="'level-' + getAccessLevelNumber(user.access_level)">
+                {{ getAccessLevelLabel(user.access_level) }}
+                <span *ngIf="isCurrentUser(user)" class="current-user-indicator">(You)</span>
+              </span>
+            </ng-template>
+          </td>
+          <td class="query-permission">
+            <div *ngIf="canModifyQueryPermission(user); else readOnlyPermission">
+              <label class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [checked]="user.query_permission"
+                  (change)="toggleQueryPermission(user)"
+                  [disabled]="user.isUpdating">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="updating-indicator" *ngIf="user.isUpdating">Updating...</div>
+            </div>
+            <ng-template #readOnlyPermission>
+              <span class="permission-badge" [class]="hasEffectiveQueryPermission(user) ? 'enabled' : 'disabled'">
+                {{ hasEffectiveQueryPermission(user) ? 'Enabled' : 'Disabled' }}
+                <span *ngIf="user.access_level === 'admin' || user.access_level === 'super_admin'" class="admin-note">(Admin)</span>
+              </span>
+            </ng-template>
+          </td>
+          <td class="last-login">
+            <span *ngIf="user.last_login; else neverLoggedIn">
+              {{ user.last_login | date:'short' }}
+            </span>
+            <ng-template #neverLoggedIn>
+              <span class="never-logged-in">Never</span>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="no-users" *ngIf="!loading && users.length === 0">
+    <p>No users found.</p>
+  </div>
+</div>
